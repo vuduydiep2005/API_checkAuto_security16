@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "feature": "Login",
+    "case_name": "Login với admin hợp lệ",
+    "method": "POST",
+    "endpoint": "/login",
+    "payload": {
+      "username": "admin",
+      "password": "password123"
+    },
+    "expected_status": 200
+  }
+]
