@@ -6,7 +6,7 @@ Thành viên nhóm :
   + Vũ Duy Điệp : Phát triển Target API (FastAPI) & Vulnerabilities ( dựa theo khung Framework )
   + Nguyễn Quang Đạt : Phát triển Functional Test Sctipts (CRUD operations)
   + Nguyễn Trung Duy : Phát triển Security Test Scripts ( SQLi, BOLA, Broken Auth).
-  + Phạm Văn Qúy: Tài liệu kĩ thuật & Allure Report, Phân tích kết quả kịch bản kiểm thử
+  + Nguyễn Quang Đạt: Tài liệu kĩ thuật & Allure Report, Phân tích kết quả kịch bản kiểm thử, Tổng hợp báo cáo 
 
 Cấu trúc thư mục 
   - `core/`: chứa API Client dùng chung cho toàn dự án.
