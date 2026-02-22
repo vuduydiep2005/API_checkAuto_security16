@@ -1,0 +1,20 @@
+{
+  "data": {
+    "module": "Broken Authentication",
+    "description": "Kiem tra chu ki sai,boc tach token jwt, va header bypass",
+    "target": "mainnew1.py"
+  },
+  "test_jwt": [
+    "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImV4cCI6OTk5OTk5OTk5OX0.", 
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiJ9.chuakysaisml",
+    "chi_la_mot_chuoi_linh_tinh",
+    "",
+    "null"
+  ],
+  "header_bypass": [
+    {"Authorization": ""},
+    {"Authorization": "Bearer "},
+    {"Authorization": "Bearer null"},
+    {"Authorization": "Basic YWRtaW46cGFzc3dvcmQ="}
+  ]
+}
