@@ -5,8 +5,8 @@
     "target": "mainnew1.py"
   },
   "test_jwt": [
-    "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImV4cCI6OTk5OTk5OTk5OX0.", 
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiJ9.chuakysaisml",
+    "eyJhbGciOiJub25lIiwidHlwIjoiS1dUIn0.eyJzdWIiOiJhzG1pbiIsInJvbGUiOiJhzG1pbiIsImV4cCI6MTk5OTk5OX0.",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhzG1pbiIsInJvbGUiOiJhzG1pbiJ9.chuakysaism1",
     "chi_la_mot_chuoi_linh_tinh",
     "",
     "null"
@@ -16,5 +16,16 @@
     {"Authorization": "Bearer "},
     {"Authorization": "Bearer null"},
     {"Authorization": "Basic YWRtaW46cGFzc3dvcmQ="}
+  ],
+  
+  "brute_force": [
+    {
+      "id": "BF_WORDLIST_01",
+      "description": "Thuc hien Brute Force nap tu file wordlist",
+      "config": {
+        "user_file": "wordlist/user.txt",
+        "pass_file": "wordlist/password.txt"
+      }
+    }
   ]
 }
