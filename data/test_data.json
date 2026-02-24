@@ -1,31 +1,38 @@
-{
-  "data": {
-    "module": "Broken Authentication",
-    "description": "Kiem tra chu ki sai,boc tach token jwt, va header bypass",
-    "target": "mainnew1.py"
+[
+  {
+    "id": 1,
+    "feature": "SQL Injection",
+    "case_name": "Bypass Login bằng SQLi (Logic luôn đúng)",
+    "method": "POST",
+    "endpoint": "/api/v1/login",
+    "payload": {
+      "username": "admin' --",
+      "password": "any_password"
+    },
+    "expected_status": 401
   },
-  "test_jwt": [
-    "eyJhbGciOiJub25lIiwidHlwIjoiS1dUIn0.eyJzdWIiOiJhzG1pbiIsInJvbGUiOiJhzG1pbiIsImV4cCI6MTk5OTk5OX0.",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhzG1pbiIsInJvbGUiOiJhzG1pbiJ9.chuakysaism1",
-    "chi_la_mot_chuoi_linh_tinh",
-    "",
-    "null"
-  ],
-  "header_bypass": [
-    {"Authorization": ""},
-    {"Authorization": "Bearer "},
-    {"Authorization": "Bearer null"},
-    {"Authorization": "Basic YWRtaW46cGFzc3dvcmQ="}
-  ],
-  
-  "brute_force": [
-    {
-      "id": "BF_WORDLIST_01",
-      "description": "Thuc hien Brute Force nap tu file wordlist",
-      "config": {
-        "user_file": "wordlist/user.txt",
-        "pass_file": "wordlist/password.txt"
-      }
-    }
-  ]
-}
+  {
+    "id": 3,
+    "feature": "BOLA/IDOR",
+    "case_name": "Xem thông tin người dùng trái phép (Thay đổi ID)",
+    "method": "GET",
+    "endpoint": "/api/users/{id}/", 
+    "headers": {
+      "Authorization": "Bearer <TOKEN_CUA_BAN>"
+    },
+    "payload": null,
+    "expected_status": 403
+  },
+  {
+    "id": 5,
+    "feature": "Broken Authentication",
+    "case_name": "Brute Force / Password Spray vào Login",
+    "method": "POST",
+    "endpoint": "/api/v1/login",
+    "payload": {
+      "user_file": "wordlist/user.txt",
+      "pass_file": "wordlist/password.txt"
+    },
+    "expected_status": 401
+  },
+]
