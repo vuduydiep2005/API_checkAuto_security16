@@ -121,7 +121,7 @@
     "expected_status": 404
   },
   {
-    "id": 11,
+    "id": 12,
     "feature": "SQL Injection",
     "case_name": "Bypass Login bằng SQLi (Logic luôn đúng)",
     "method": "POST",
@@ -133,19 +133,37 @@
     "expected_status": 401
   },
   {
-    "id": 12,
-    "feature": "BOLA/IDOR",
-    "case_name": "Xem thông tin người dùng trái phép (Thay đổi ID)",
-    "method": "GET",
-    "endpoint": "/api/users/{id}/", 
-    "headers": {
-      "Authorization": "Bearer <TOKEN_CUA_BAN>"
+  "id": 13,
+  "feature": "BOLA/IDOR",
+  "case_name": "Xem thông tin người dùng trái phép (Thay đổi ID)",
+  "method": "GET",
+  "endpoint": "/api/{anything_with_id_in_it}", 
+  "expected_status": 403,
+  "payloads": [
+    {
+      "my_id": "101",
+      "target_id": "102",
+      "description": "Tấn công BOLA: Cố gắng truy cập data của user ngang hàng"
     },
-    "payload": null,
-    "expected_status": 403
-  },
+    {
+      "my_id": "101",
+      "target_id": "1",
+      "description": "Tấn công BOLA: Cố gắng lấy data của Admin (Leo thang đặc quyền)"
+    },
+    {
+      "my_id": "101",
+      "target_id": "999999999",
+      "description": "Fuzzing: Tấn công với ID không tồn tại xem server có bị crash/lộ lỗi SQL không"
+    },
+    {
+      "my_id": "101",
+      "target_id": "đâsdasdw;",
+      "description": "Fuzzing: Nhồi ký tự lạ vào trường ID xem có dính lỗi Type Confusion không"
+    }
+  ]
+},
   {
-    "id": 13,
+    "id": 14,
     "feature": "Broken Authentication",
     "case_name": "Brute Force / Password Spray vào Login",
     "method": "POST",
