@@ -2,12 +2,12 @@
   {
     "id": 1,
     "feature": "Login",
-    "case_name": "Login với admin hợp lệ",
+    "case_name": "Đăng nhập Admin hợp lệ",
     "method": "POST",
-    "endpoint": "/login",
+    "endpoint": "/token",
     "payload": {
       "username": "admin",
-      "password": "password123"
+      "password": "password"
     },
     "expected_status": 200
   }

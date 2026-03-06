@@ -1,1 +1,177 @@
-
+[
+  {
+    "id": 1,
+    "feature": "Login",
+    "case_name": "Đăng nhập Admin hợp lệ",
+    "method": "POST",
+    "endpoint": "/token",
+    "payload": {
+      "username": "admin",
+      "password": "password"
+    },
+    "expected_status": 200
+  },
+  {
+    "id": 2,
+    "feature": "Create",
+    "case_name": "Tạo người dùng hợp lệ",
+    "method": "POST",
+    "endpoint": "/users",
+    "payload": {
+      "Id": 0,
+      "username": "test",
+      "password": "123456"
+    },
+    "expected_status": 200
+  },
+  {
+    "id": 3,
+    "feature": "Create",
+    "case_name": "Tạo trùng lặp username",
+    "method": "POST",
+    "endpoint": "/users",
+    "payload": {
+      "Id": 2,
+      "username": "test",
+      "password": "test123"
+    },
+    "expected_status": 400
+  },
+  {
+    "id": 4,
+    "feature": "Create",
+    "case_name": "Sai kiểu dữ liệu (age là chuỗi)",
+    "method": "POST",
+    "endpoint": "/users",
+    "payload": {
+      "Id": 3,
+      "username": "test1",
+      "password": "123456",
+      "Tuoi": "hai_muoi_mot"
+    },
+    "expected_status": 400
+  },
+  {
+    "id": 5,
+    "feature": "Read",
+    "case_name": "Lấy thông tin User theo ID",
+    "method": "GET",
+    "endpoint": "/users/1",
+    "payload": null,
+    "expected_status": 200
+  },
+  {
+    "id": 6,
+    "feature": "Read",
+    "case_name": "Kiểm tra lỗi dữ liệu ma (thiếu commit)",
+    "method": "GET",
+    "endpoint": "/users",
+    "payload": null,
+    "expected_status": 200
+  },
+  {
+    "id": 7,
+    "feature": "Update",
+    "case_name": "Cập nhật dữ liệu hợp lệ",
+    "method": "PUT",
+    "endpoint": "/users/1",
+    "payload": {
+      "Ten": "Quy",
+      "Tuoi": 22
+    },
+    "expected_status": 200
+  },
+  {
+    "id": 8,
+    "feature": "Update",
+    "case_name": "Cập nhật dữ liệu rỗng",
+    "method": "PUT",
+    "endpoint": "/users/1",
+    "payload": {},
+    "expected_status": 400
+  },
+  {
+    "id": 9,
+    "feature": "Login",
+    "case_name": "Đăng nhập tài khoản bị khóa",
+    "method": "POST",
+    "endpoint": "/token",
+    "payload": {
+      "username": "test",
+      "password": "123456"
+    },
+    "expected_status": 403
+  },
+  {
+    "id": 10,
+    "feature": "Delete",
+    "case_name": "Xóa người dùng tồn tại",
+    "method": "DELETE",
+    "endpoint": "/users/3",
+    "payload": null,
+    "expected_status": 200
+  },
+  {
+    "id": 11,
+    "feature": "Delete",
+    "case_name": "Xóa user không tồn tại",
+    "method": "DELETE",
+    "endpoint": "/users/99",
+    "payload": null,
+    "expected_status": 404
+  },
+  {
+    "id": 12,
+    "feature": "SQL Injection",
+    "case_name": "Bypass Login bằng SQLi (Logic luôn đúng)",
+    "method": "POST",
+    "endpoint": "/api/v1/login",
+    "payload": {
+      "username": "admin' --",
+      "password": "any_password"
+    },
+    "expected_status": 401
+  },
+  {
+  "id": 13,
+  "feature": "BOLA/IDOR",
+  "case_name": "Xem thông tin người dùng trái phép (Thay đổi ID)",
+  "method": "GET",
+  "endpoint": "/api/{anything_with_id_in_it}", 
+  "expected_status": 403,
+  "payloads": [
+    {
+      "my_id": "101",
+      "target_id": "102",
+      "description": "Tấn công BOLA: Cố gắng truy cập data của user ngang hàng"
+    },
+    {
+      "my_id": "101",
+      "target_id": "1",
+      "description": "Tấn công BOLA: Cố gắng lấy data của Admin (Leo thang đặc quyền)"
+    },
+    {
+      "my_id": "101",
+      "target_id": "999999999",
+      "description": "Fuzzing: Tấn công với ID không tồn tại xem server có bị crash/lộ lỗi SQL không"
+    },
+    {
+      "my_id": "101",
+      "target_id": "đâsdasdw;",
+      "description": "Fuzzing: Nhồi ký tự lạ vào trường ID xem có dính lỗi Type Confusion không"
+    }
+  ]
+},
+  {
+    "id": 14,
+    "feature": "Broken Authentication",
+    "case_name": "Brute Force / Password Spray vào Login",
+    "method": "POST",
+    "endpoint": "/api/v1/login",
+    "payload": {
+      "user_file": "wordlist/user.txt",
+      "pass_file": "wordlist/password.txt"
+    },
+    "expected_status": 401
+  },
+]
